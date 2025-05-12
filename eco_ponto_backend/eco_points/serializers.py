@@ -1,4 +1,3 @@
-# from accounts.models import User
 from .models import CollectionPoint, CollectionType, PointRequest, PointReview
 from .validators import validate_latitude_value, validate_longitude_value, validate_category_value
 from rest_framework import serializers
