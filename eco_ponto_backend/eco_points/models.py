@@ -1,0 +1,44 @@
+from django.db import models
+from accounts.models import User
+
+class CollectionType(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField(blank=True, max_length=500)
+
+    def __str__(self):
+        return self.name
+
+class CollectionPoint(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True, max_length=500)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6)
+    types = models.ManyToManyField(CollectionType, related_name='points')
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+
+class PointReview(models.Model):
+    point = models.ForeignKey(CollectionPoint, on_delete=models.CASCADE, related_name='reviews')
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    comment = models.TextField(max_length=500)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user} - {self.point}"
+
+class PointRequest(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True, max_length=500)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6)
+    types = models.ManyToManyField(CollectionType)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    approved = models.BooleanField(null=False, blank=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.name} ({'Aprovado' if self.approved else 'Pendente'})"

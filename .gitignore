@@ -172,3 +172,7 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# settings.py
+eco_ponto_backend/eco_ponto_backend/settings.py
+eco_ponto_backend/eco_ponto_backend/settings.py
