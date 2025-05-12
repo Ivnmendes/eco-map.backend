@@ -18,9 +18,8 @@ admin.site.register(CollectionPoint, CollectionPointAdmin)
 
 # Register PointReview
 class PointReviewAdmin(admin.ModelAdmin):
-    list_display = ('user', 'point', 'exists', 'created_at')
+    list_display = ('user', 'point', 'created_at')
     search_fields = ('user__username', 'point__name')
-    list_filter = ('exists',)
 
 admin.site.register(PointReview, PointReviewAdmin)
 

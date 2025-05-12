@@ -11,12 +11,12 @@ class CollectionPointSerializer(serializers.ModelSerializer):
         model = CollectionPoint
         fields = ['id', 'name', 'description', 'latitude', 'longitude', 'types', 'created_by', 'is_active', 'created_at']
 
-class CollectionType(serializers.ModelSerializer):
+class CollectionTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = CollectionType
         fields = ['id', 'name', 'description']
 
-class PointRequest(serializers.ModelSerializer):
+class PointRequestSerializer(serializers.ModelSerializer):
     class Meta:
         latitude = serializers.DecimalField(validators=[validate_latitude_value]);
         longitude = serializers.DecimalField(validators=[validate_longitude_value]);
@@ -25,7 +25,7 @@ class PointRequest(serializers.ModelSerializer):
         model = PointRequest
         fields = ['id', 'name', 'description', 'latitude', 'longitude', 'types', 'user', 'approved', 'created_at']
 
-class PointReview(serializers.ModelSerializer):
+class PointReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = PointReview
         fields = ['id', 'point', 'user', 'comment', 'created_at']
