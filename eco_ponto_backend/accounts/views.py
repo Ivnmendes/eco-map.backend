@@ -1,6 +1,10 @@
-from rest_framework.views import APIView
+from django.contrib.auth import authenticate
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework.views import APIView
+from rest_framework import status, permissions
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken, OutstandingToken
 from .models import User
 from .serializers import UserSerializer
 
@@ -10,6 +14,53 @@ def getObject(value):
 def getAllObjects():
     return User.objects.all()
 
+class RegisterView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = UserSerializer(data=request.data)
+
+        if serializer.is_valid():
+            user = serializer.save()
+            refresh = RefreshToken.for_user(user)
+            return Response({
+                "refresh": str(refresh),
+                "acess": str(refresh.access_token)
+            }, status=201)
+
+        return Response(serializer.errors, status=400)
+
+class LoginView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        username = request.data.get('email')
+        password = request.data.get('password')
+
+        user = authenticate(username=username, password=password)
+
+        if user is None:
+            return Response({"error": "Credenciais inválidas"}, status=401)
+
+        refresh = RefreshToken.for_user(user)
+
+        return Response({
+            "refresh": str(refresh),
+            "acess": str(refresh.access_token)
+        }, status=201)
+
+class LogoutView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        try:
+            refresh_token = request.data["refresh"]
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            return Response(status=status.HTTP_205_RESET_CONTENT)
+        except Exception:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        
 class UserList(APIView):
     def get(self, request):
         users = getAllObjects()
@@ -17,15 +68,6 @@ class UserList(APIView):
 
         serializer = UserSerializer(users, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
-    def post(self, request):
-        serializer = UserSerializer(data=request.data)
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class UserDetail(APIView):
     def get(self, request, pk):
