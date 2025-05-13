@@ -4,33 +4,33 @@ from rest_framework import status
 from .models import CollectionType, CollectionPoint, PointRequest, PointReview, PointRequest
 from .serializers import CollectionPointSerializer, CollectionTypeSerializer, PointRequestSerializer, PointReviewSerializer
 
-def getObjectCollectionType(value):
+def get_object_collection_type(value):
     return CollectionType.objects.get(pk=value)
 
-def getAllObjectsCollectionType():
+def get_all_object_collection_type():
     return CollectionType.objects.all()
 
-def getObjectCollectionPoint(value):
+def get_object_collection_point(value):
     return CollectionPoint.objects.get(pk=value)
 
-def getAllObjectsCollectionPoint():
+def get_all_object_collection_point():
     return CollectionPoint.objects.all()
 
-def getObjectPointRequest(value):
+def get_object_point_request(value):
     return PointRequest.objects.get(pk=value)
 
-def getAllObjectsPointRequest():
+def get_all_object_point_request():
     return PointRequest.objects.all()
 
-def getObjectPointReview(value):
+def get_object_point_review(value):
     return PointReview.objects.get(pk=value)
 
-def getAllObjectsPointReview():
+def get_all_object_point_review():
     return PointReview.objects.all()
 
-def CollectionTypeList(APIView):
+class CollectionTypeList(APIView):
     def get(self, request):
-        collectionTypes = getAllObjectsCollectionType()
+        collectionTypes = get_all_object_collection_type()
         if not collectionTypes: return Response("Nenhuma categoria de coleta", status=status.HTTP_404_NOT_FOUND)
 
         serializer = CollectionTypeSerializer(collectionTypes, many = True)
@@ -45,16 +45,16 @@ def CollectionTypeList(APIView):
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-def CollectionTypeDetail(APIView):
+class CollectionTypeDetail(APIView):
     def get(self, request, pk):
-        collectionType = getObjectCollectionType(pk)
+        collectionType = get_object_collection_type(pk)
         if not collectionType: return Response("Categoria nao encontrada", status=status.HTTP_404_NOT_FOUND)
 
         serializer = CollectionTypeSerializer(collectionType)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     def put(self, request, pk):
-        collectionType = getObjectCollectionType(pk)
+        collectionType = get_object_collection_type(pk)
         if not collectionType: return Response("Categoria nao encontrada", status=status.HTTP_404_NOT_FOUND)
 
         serializer = CollectionTypeSerializer(collectionType, data=request.data)
@@ -64,7 +64,7 @@ def CollectionTypeDetail(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def patch(self, request, pk):
-        collectionType = getObjectCollectionType(pk)
+        collectionType = get_object_collection_type(pk)
         if not collectionType: return Response("Categoria nao encontrada", status=status.HTTP_404_NOT_FOUND)
 
         serializer = CollectionTypeSerializer(collectionType, data=request.data, partial=True)
@@ -74,15 +74,15 @@ def CollectionTypeDetail(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
-        collectionType = getObjectCollectionType()
+        collectionType = get_object_collection_type(pk)
         if collectionType:
             collectionType.delete()
             return Response("Categoria deletada com sucesso", status=status.HTTP_204_NO_CONTENT)
         return Response("Categoria nao encontrada", status=status.HTTP_404_NOT_FOUND)
 
-def CollectionPointList(APIView):
+class CollectionPointList(APIView):
     def get(self, request):
-        collectionPoints = getAllObjectsCollectionPoint()
+        collectionPoints = get_all_object_collection_point()
         if not collectionPoints: return Response("Nenhum ponto de coleta encontrado", status=status.HTTP_404_NOT_FOUND)
 
         serializer = CollectionPointSerializer(collectionPoints, many = True)
@@ -97,16 +97,16 @@ def CollectionPointList(APIView):
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-def CollectionPointDetail(APIView):
+class CollectionPointDetail(APIView):
     def get(self, request, pk):
-        collectionPoint = getObjectCollectionPoint(pk)
+        collectionPoint = get_object_collection_point(pk)
         if not collectionPoint: return Response("Ponto de coleta não encontrado", status=status.HTTP_404_NOT_FOUND)
 
         serializer = CollectionPointSerializer(collectionPoint)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     def put(self, request, pk):
-        collectionPoint = getObjectCollectionPoint(pk)
+        collectionPoint = get_object_collection_point(pk)
         if not collectionPoint: return Response("Ponto de coleta não encontrado", status=status.HTTP_404_NOT_FOUND)
 
         serializer = CollectionPointSerializer(collectionPoint, data=request.data)
@@ -116,7 +116,7 @@ def CollectionPointDetail(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def patch(self, request, pk):
-        collectionPoint = getObjectCollectionPoint(pk)
+        collectionPoint = get_object_collection_point(pk)
         if not collectionPoint: return Response("Ponto de coleta não encontrado", status=status.HTTP_404_NOT_FOUND)
 
         serializer = CollectionPointSerializer(collectionPoint, data=request.data, partial=True)
@@ -126,15 +126,15 @@ def CollectionPointDetail(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
-        collectionPoint = getObjectCollectionPoint()
+        collectionPoint = get_object_collection_point(pk)
         if collectionPoint:
             collectionPoint.delete()
             return Response("Ponto de coleta criado com sucesso", status=status.HTTP_204_NO_CONTENT)
         return Response("Ponto de coleta não encontrado", status=status.HTTP_404_NOT_FOUND)   
 
-def PointReviewList(APIView):
+class PointReviewList(APIView):
     def get(self, request):
-        pointReview = getAllObjectsPointReview()
+        pointReview = get_all_object_point_review()
         if not pointReview: return Response("Nenhum ponto em análise", status=status.HTTP_404_NOT_FOUND)
 
         serializer = PointReviewSerializer(pointReview, many = True)
@@ -149,16 +149,16 @@ def PointReviewList(APIView):
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-def PointReviewDetail(APIView):
+class PointReviewDetail(APIView):
     def get(self, request, pk):
-        PointReview = getObjectPointReview(pk)
+        PointReview = get_object_point_review(pk)
         if not PointReview: return Response("Avaliação não encontrada", status=status.HTTP_404_NOT_FOUND)
 
         serializer = PointReviewSerializer(PointReview)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     def put(self, request, pk):
-        PointReview = getObjectPointReview(pk)
+        PointReview = get_object_point_review(pk)
         if not PointReview: return Response("Avaliação não encontrada", status=status.HTTP_404_NOT_FOUND)
 
         serializer = PointReviewSerializer(PointReview, data=request.data)
@@ -168,7 +168,7 @@ def PointReviewDetail(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def patch(self, request, pk):
-        PointReview = getObjectPointReview(pk)
+        PointReview = get_object_point_review(pk)
         if not PointReview: return Response("Avaliação não encontrada", status=status.HTTP_404_NOT_FOUND)
 
         serializer = PointReviewSerializer(PointReview, data=request.data, partial=True)
@@ -178,15 +178,15 @@ def PointReviewDetail(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
-        PointReview = getObjectPointReview()
+        PointReview = get_object_point_review(pk)
         if PointReview:
             PointReview.delete()
             return Response("Avaliação submetida com sucesso", status=status.HTTP_204_NO_CONTENT)
         return Response("Avaliação não encontrada", status=status.HTTP_404_NOT_FOUND)   
 
-def PointRequestList(APIView):
+class PointRequestList(APIView):
     def get(self, request):
-        pointRequest = getAllObjectsPointRequest()
+        pointRequest = get_all_object_point_request()
         if not pointRequest: return Response("Nenhum ponto em análise", status=status.HTTP_404_NOT_FOUND)
 
         serializer = PointRequestSerializer(pointRequest, many = True)
@@ -201,16 +201,16 @@ def PointRequestList(APIView):
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-def PointRequestDetail(APIView):
+class PointRequestDetail(APIView):
     def get(self, request, pk):
-        PointRequest = getObjectPointRequest(pk)
+        PointRequest = get_object_point_request(pk)
         if not PointRequest: return Response("Nenhum ponto em análise", status=status.HTTP_404_NOT_FOUND)
 
         serializer = PointRequestSerializer(PointRequest)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     def put(self, request, pk):
-        PointRequest = getObjectPointRequest(pk)
+        PointRequest = get_object_point_request(pk)
         if not PointRequest: return Response("Nenhum ponto em análise", status=status.HTTP_404_NOT_FOUND)
 
         serializer = PointRequestSerializer(PointRequest, data=request.data)
@@ -220,7 +220,7 @@ def PointRequestDetail(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def patch(self, request, pk):
-        PointRequest = getObjectPointRequest(pk)
+        PointRequest = get_object_point_request(pk)
         if not PointRequest: return Response("Nenhum ponto em análise", status=status.HTTP_404_NOT_FOUND)
 
         serializer = PointRequestSerializer(PointRequest, data=request.data, partial=True)
@@ -230,7 +230,7 @@ def PointRequestDetail(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
-        PointRequest = getObjectPointRequest()
+        PointRequest = get_object_point_request(pk)
         if PointRequest:
             PointRequest.delete()
             return Response("Ponto de coleta enviado para análise", status=status.HTTP_204_NO_CONTENT)

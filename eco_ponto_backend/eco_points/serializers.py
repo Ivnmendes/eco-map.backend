@@ -3,9 +3,13 @@ from .validators import validate_latitude_value, validate_longitude_value, valid
 from rest_framework import serializers
 
 class CollectionPointSerializer(serializers.ModelSerializer):
-    latitude = serializers.DecimalField(validators=[validate_latitude_value]);
-    longitude = serializers.DecimalField(validators=[validate_longitude_value]);
-    types = serializers.CharField(validators=[validate_category_value])
+    latitude = serializers.DecimalField(validators=[validate_latitude_value], max_digits=9, decimal_places=6);
+    longitude = serializers.DecimalField(validators=[validate_longitude_value], max_digits=9, decimal_places=6);
+    types = serializers.PrimaryKeyRelatedField(
+        validators=[validate_category_value],
+        many=True,
+        queryset=CollectionType.objects.all()
+    )
 
     class Meta:
         model = CollectionPoint
@@ -18,8 +22,8 @@ class CollectionTypeSerializer(serializers.ModelSerializer):
 
 class PointRequestSerializer(serializers.ModelSerializer):
     class Meta:
-        latitude = serializers.DecimalField(validators=[validate_latitude_value]);
-        longitude = serializers.DecimalField(validators=[validate_longitude_value]);
+        latitude = serializers.DecimalField(validators=[validate_latitude_value], max_digits=9, decimal_places=6)
+        longitude = serializers.DecimalField(validators=[validate_longitude_value], max_digits=9, decimal_places=6)
         types = serializers.CharField(validators=[validate_category_value])
         
         model = PointRequest
