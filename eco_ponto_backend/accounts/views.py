@@ -1,12 +1,13 @@
 from django.contrib.auth import authenticate
-from rest_framework.permissions import AllowAny
+from rest_framework import generics, mixins, status, permissions
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework import status, permissions
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken, OutstandingToken
+from drf_spectacular.utils import extend_schema, OpenApiExample
+
 from .models import User
 from .serializers import UserSerializer
+
 
 def getObject(value):
     return User.objects.get(pk=value)
@@ -14,29 +15,38 @@ def getObject(value):
 def getAllObjects():
     return User.objects.all()
 
-class RegisterView(APIView):
+class RegisterView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
     permission_classes = [AllowAny]
 
-    def post(self, request):
-        serializer = UserSerializer(data=request.data)
+    def perform_create(self, serializer):
+        user = serializer.save()
+        refresh = RefreshToken.for_user(user)
+        self.tokens = {
+            "refresh": str(refresh),
+            "access": str(refresh.access_token)
+        }
 
-        if serializer.is_valid():
-            user = serializer.save()
-            refresh = RefreshToken.for_user(user)
-            return Response({
-                "refresh": str(refresh),
-                "acess": str(refresh.access_token)
-            }, status=201)
+    def create(self, request, *args, **kwargs):
+        response = super().create(request, *args, **kwargs)
+        return Response(self.tokens, status=status.HTTP_201_CREATED)
 
-        return Response(serializer.errors, status=400)
 
-class LoginView(APIView):
+class LoginView(generics.GenericAPIView):
+    serializer_class = UserSerializer
     permission_classes = [AllowAny]
 
+    @extend_schema(
+        request=UserSerializer,
+        responses={201: OpenApiExample("Login realizado com sucesso", value={
+            "refresh": "string",
+            "access": "string"
+        })}
+    )
     def post(self, request):
         username = request.data.get('email')
         password = request.data.get('password')
-
         user = authenticate(username=username, password=password)
 
         if user is None:
@@ -46,11 +56,10 @@ class LoginView(APIView):
 
         return Response({
             "refresh": str(refresh),
-            "acess": str(refresh.access_token)
+            "access": str(refresh.access_token)
         }, status=201)
-
-class LogoutView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+class LogoutView(generics.GenericAPIView):
+    permission_classes = [IsAuthenticated]
 
     def post(self, request):
         try:
@@ -61,23 +70,28 @@ class LogoutView(APIView):
         except Exception:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         
-class UserList(APIView):
-    def get(self, request):
-        users = getAllObjects()
-        if not users: return Response("Nenhum usuario encontrado", status=status.HTTP_404_NOT_FOUND)
+class UserList(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
 
-        serializer = UserSerializer(users, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+class UserDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'pk'
 
-class UserDetail(APIView):
+    """Metodos HTTP com parametro"""
     def get(self, request, pk):
+        """Obtem um usuario via id"""
         user = getObject(pk)
         if not user: return Response("Usuario nao encontrado", status=status.HTTP_404_NOT_FOUND)
 
         serializer = UserSerializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
+
     def put(self, request, pk):
+        """Atualiza completamente um usuario via id"""
         user = getObject(pk)
         if not user: return Response("Usuario nao encontrado", status=status.HTTP_404_NOT_FOUND)
 
@@ -88,6 +102,7 @@ class UserDetail(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def patch(self, request, pk):
+        """Atualiza parcialmente um usuario via id"""
         user = getObject(pk)
         if not user: return Response("Usuario nao encontrado", status=status.HTTP_404_NOT_FOUND)
 
@@ -98,6 +113,7 @@ class UserDetail(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def delete(self, request, pk):
+        """Deleta um usuario via id"""
         user = getObject(pk)
         if user:
             user.delete()
