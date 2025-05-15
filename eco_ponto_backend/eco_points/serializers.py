@@ -21,6 +21,7 @@ class CollectionPointSerializer(serializers.ModelSerializer):
         return {str(t.id): t.name for t in obj.types.all()}
 
 class PointRequestSerializer(serializers.ModelSerializer):
+    approved = serializers.BooleanField(read_only=True)
     latitude = serializers.DecimalField(validators=[validate_latitude_value], max_digits=9, decimal_places=6)
     longitude = serializers.DecimalField(validators=[validate_longitude_value], max_digits=9, decimal_places=6)
     types = serializers.SerializerMethodField()
@@ -32,6 +33,10 @@ class PointRequestSerializer(serializers.ModelSerializer):
 
     def get_types(self, obj):
         return {str(t.id): t.name for t in obj.types.all()}
+    
+    def create(self, validated_data):
+        validated_data['approved'] = False
+        return super().create(validated_data)
 
 class PointReviewSerializer(serializers.ModelSerializer):
     user_name = serializers.CharField(source='user.first_name')
