@@ -4,16 +4,20 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenRefreshView
+from rest_framework.exceptions import PermissionDenied
 from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiExample, inline_serializer
 
 from .models import User
-from .serializers import LoginSerializer, LogoutSerializer, UserSerializer
+from .serializers import LoginSerializer, LogoutSerializer, UserSerializer, UserMeSerializer
 
 def getAllObjects():
     return User.objects.all()
 
 @extend_schema(tags=["Autenticação"])
 class RegisterView(generics.CreateAPIView):
+    """
+    Cria novo usuário
+    """
     queryset = getAllObjects()
     serializer_class = UserSerializer
     permission_classes = [AllowAny]
@@ -51,12 +55,15 @@ class RegisterView(generics.CreateAPIView):
     examples=[
         OpenApiExample(
             name="Exemplo de login",
-            value={"email": "usuario@email.com", "password": "senha123"},
+            value={"email": "teste@email.com", "password": "teste123#"},
             request_only=True
         )
     ]
 )
 class LoginView(generics.GenericAPIView):
+    """
+    Realiza login
+    """
     serializer_class = UserSerializer
     permission_classes = [AllowAny]
 
@@ -75,6 +82,16 @@ class LoginView(generics.GenericAPIView):
             "access": str(refresh.access_token)
         }, status=201)
     
+@extend_schema(tags=["Autenticação"])
+class MeView(generics.GenericAPIView):
+    """
+    Retorna informações sobre o usuário do request
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        serializer = UserMeSerializer(request.user)
+        return Response(serializer.data)
 
 @extend_schema(
     tags=["Autenticação"],
@@ -82,6 +99,9 @@ class LoginView(generics.GenericAPIView):
     responses={205: None, 400: None}
 )
 class LogoutView(generics.GenericAPIView):
+    """
+    Responsável por deslogar o usuário, adicionando o token ao blacklist
+    """
     serializer_class = LogoutSerializer
     permission_classes = [IsAuthenticated]
 
@@ -105,13 +125,57 @@ class CustomTokenRefreshView(TokenRefreshView):
 
 @extend_schema(tags=["Usuários"])
 class UserList(generics.ListAPIView):
+    """
+    Responsável por lidar com operações para vários usuários (getAll)
+    """
     queryset = getAllObjects()
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
 
+    def get_queryset(self):
+        """
+        Restringe acesso de listagem/detalhamento apenas para admin.
+        """
+        user = self.request.user
+        if self.request.method in ['GET']:
+            if not user.is_staff and not user.is_admin:
+                raise PermissionDenied("Apenas administradores tem acesso a essas rotas")
+        return super().get_queryset()
+
 @extend_schema(tags=["Usuários"])
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Responsável por lidar com operações especificas por usuário (via id)
+    """
     queryset = getAllObjects()
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
     lookup_field = 'pk'
+
+    def get_queryset(self):
+        """
+        Restringe acesso de listagem/detalhamento apenas para admin.
+        """
+        user = self.request.user
+        if self.request.method in ['GET']:
+            if not user.is_staff and not user.is_admin:
+                raise PermissionDenied("Apenas administradores tem acesso a essas rotas")
+        return super().get_queryset()
+    
+    def perform_update(self, serializer):
+        """
+        Impede edição de outro usuário que não seja o dono.
+        """
+        user = self.request.user
+        if user != self.get_object() or not user.is_staff and user.is_admin:
+            raise PermissionDenied("Você só pode editar sua própria conta.")
+        serializer.save()
+
+    def perform_destroy(self, instance):
+        """
+        Impede exclusão de outro usuário que não seja o dono.
+        """
+        user = self.request.user
+        if user != instance or not user.is_staff and user.is_admin:
+            raise PermissionDenied("Você só pode excluir sua própria conta.")
+        instance.delete()
