@@ -24,3 +24,10 @@ class UserSerializer(serializers.ModelSerializer):
         validated_data.pop('confirm_password')
         user = User.objects.create_user(**validated_data)
         return user
+    
+class LoginSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField()
+
+class LogoutSerializer(serializers.Serializer):
+    refresh = serializers.CharField()
