@@ -3,6 +3,7 @@ from drf_spectacular.views import SpectacularSwaggerView, SpectacularAPIView
 from django.urls import path, include
 
 urlpatterns = [
+    path('jet/', include('jet.urls', 'jet')),
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('swagger/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('admin/', admin.site.urls), 
