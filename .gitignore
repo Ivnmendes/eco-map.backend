@@ -174,5 +174,4 @@ cython_debug/
 .pypirc
 
 # settings.py
-eco_ponto_backend/eco_ponto_backend/settings.py
-eco_ponto_backend/eco_ponto_backend/settings.py
+eco_map_backend/eco_map_backend/settings.py

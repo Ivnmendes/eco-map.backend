@@ -25,8 +25,12 @@ admin.site.register(PointReview, PointReviewAdmin)
 
 # Register PointRequest
 class PointRequestAdmin(admin.ModelAdmin):
-    list_display = ('name', 'approved', 'user', 'created_at')
+    list_display = ('name', 'approved_status', 'user', 'created_at')
     search_fields = ('name', 'user__username')
     list_filter = ('approved',)
+
+    def approved_status(self, obj):
+        return 'Sim' if obj.approved else 'Não'
+    approved_status.short_description = 'Aprovado'
 
 admin.site.register(PointRequest, PointRequestAdmin)

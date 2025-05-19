@@ -6,7 +6,7 @@ from .models import User
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
     ordering = ['email']
-    list_display = ['email', 'first_name', 'last_name', 'is_staff']
+    list_display = ['email', 'first_name', 'last_name', 'is_staff_status']
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
         (_('Informações Pessoais'), {'fields': ('first_name', 'last_name')}),
@@ -20,3 +20,6 @@ class UserAdmin(BaseUserAdmin):
         }),
     )
     search_fields = ['email']
+
+    def is_staff_status(self, obj):
+        return 'Sim' if obj.is_staff else 'Não'
