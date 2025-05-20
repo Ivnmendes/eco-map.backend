@@ -1,6 +1,7 @@
 from .models import CollectionPoint, CollectionType, PointRequest, PointReview
 from .validators import validate_latitude_value, validate_longitude_value, validate_category_value
 from rest_framework import serializers
+from .models import User
 
 class CollectionTypeSerializer(serializers.ModelSerializer):
     class Meta:
@@ -24,8 +25,9 @@ class PointRequestSerializer(serializers.ModelSerializer):
     approved = serializers.BooleanField(read_only=True)
     latitude = serializers.DecimalField(validators=[validate_latitude_value], max_digits=9, decimal_places=6)
     longitude = serializers.DecimalField(validators=[validate_longitude_value], max_digits=9, decimal_places=6)
-    types = serializers.SerializerMethodField()
-    user_name = serializers.CharField(source='user.first_name')
+    types = serializers.PrimaryKeyRelatedField(many=True, queryset=CollectionType.objects.all())
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    user_name = serializers.CharField(read_only=True, source='user.first_name')
 
     class Meta:
         model = PointRequest
