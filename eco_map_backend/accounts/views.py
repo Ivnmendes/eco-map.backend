@@ -3,7 +3,7 @@ from rest_framework import generics, status, serializers
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework_simplejwt.views import TokenRefreshView
+from rest_framework_simplejwt.views import TokenRefreshView, TokenVerifyView
 from rest_framework.exceptions import PermissionDenied
 from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiExample, inline_serializer
 
@@ -121,6 +121,12 @@ class LogoutView(generics.GenericAPIView):
     post=extend_schema(tags=['Autenticação'])
 )
 class CustomTokenRefreshView(TokenRefreshView):
+    pass
+
+@extend_schema_view(
+    post=extend_schema(tags=['Autenticação'])
+)
+class CustomTokenVerifyView(TokenVerifyView):
     pass
 
 @extend_schema(tags=["Usuários"])

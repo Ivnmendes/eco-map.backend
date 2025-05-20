@@ -5,3 +5,4 @@ gunicorn
 djangorestframework-simplejwt
 drf_spectacular
 django-jet
+django-cors-headers
