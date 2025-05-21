@@ -14,7 +14,6 @@ class CollectionPoint(models.Model):
     latitude = models.DecimalField(max_digits=9, decimal_places=6)
     longitude = models.DecimalField(max_digits=9, decimal_places=6)
     types = models.ManyToManyField(CollectionType, related_name='points')
-    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -36,7 +35,7 @@ class PointRequest(models.Model):
     latitude = models.DecimalField(max_digits=9, decimal_places=6)
     longitude = models.DecimalField(max_digits=9, decimal_places=6)
     types = models.ManyToManyField(CollectionType)
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     approved = models.BooleanField(null=False, blank=False)
     created_at = models.DateTimeField(auto_now_add=True)
 

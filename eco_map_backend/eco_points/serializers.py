@@ -9,17 +9,14 @@ class CollectionTypeSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'description']
 
 class CollectionPointSerializer(serializers.ModelSerializer):
-    latitude = serializers.DecimalField(validators=[validate_latitude_value], max_digits=9, decimal_places=6);
-    longitude = serializers.DecimalField(validators=[validate_longitude_value], max_digits=9, decimal_places=6);
+    latitude = serializers.DecimalField(validators=[validate_latitude_value], max_digits=9, decimal_places=6)
+    longitude = serializers.DecimalField(validators=[validate_longitude_value], max_digits=9, decimal_places=6)
     types = serializers.SerializerMethodField()
     user_name = serializers.CharField(source='created_by.first_name')
 
     class Meta:
         model = CollectionPoint
-        fields = ['id', 'name', 'description', 'latitude', 'longitude', 'types', 'created_by', 'user_name', 'is_active', 'created_at']
-
-    def get_types(self, obj):
-        return {str(t.id): t.name for t in obj.types.all()}
+        fields = ['id', 'name', 'description', 'latitude', 'longitude', 'types', 'user_name', 'is_active', 'created_at']
 
 class PointRequestSerializer(serializers.ModelSerializer):
     approved = serializers.BooleanField(read_only=True)

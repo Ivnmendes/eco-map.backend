@@ -10,9 +10,9 @@ admin.site.register(CollectionType, CollectionTypeAdmin)
 
 # Register CollectionPoint
 class CollectionPointAdmin(admin.ModelAdmin):
-    list_display = ('name', 'latitude', 'longitude', 'is_active', 'created_by', 'created_at')
+    list_display = ('name', 'latitude', 'longitude', 'is_active', 'created_at')
     search_fields = ('name',)
-    list_filter = ('is_active', 'created_by')
+    list_filter = ('is_active',)
 
 admin.site.register(CollectionPoint, CollectionPointAdmin)
 
