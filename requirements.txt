@@ -4,5 +4,5 @@ psycopg2-binary
 gunicorn
 djangorestframework-simplejwt
 drf_spectacular
-django-jet
+django-jet-reboot
 django-cors-headers
