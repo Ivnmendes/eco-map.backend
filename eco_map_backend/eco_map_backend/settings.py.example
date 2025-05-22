@@ -25,7 +25,13 @@ SECRET_KEY = 'django-insecure-$cq-jlf3-7lxvzo5lrg#t6h%kn7qbr-3_!%_gorj-j78ctpdkq
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    'seu-ip-local',
+    '2e02-200-18-74-18.ngrok-free.app',
+    '.ngrok-free.app',
+]
 
 
 # Application definition
@@ -82,6 +88,13 @@ SPECTACULAR_SETTINGS = {
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': True,
     'SERVE_PUBLIC': True,
+}
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "geocache"
+    }
 }
 
 from datetime import timedelta
@@ -160,7 +173,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'eco_ponto_db',
         'USER': 'eco_user',
-        'PASSWORD': 'senha',
+        'PASSWORD': '',
         'HOST': 'localhost',
         'PORT': '5432',
     }
