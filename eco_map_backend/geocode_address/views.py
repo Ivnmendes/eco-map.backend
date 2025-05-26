@@ -91,12 +91,8 @@ class GeocodeView(APIView):
             if not data:
                 return Response({"error": "Endereço não encontrado."}, status=status.HTTP_404_NOT_FOUND)
 
-            # O Nominatim retorna uma lista de resultados. Pegamos o primeiro.
-            # É importante garantir que o resultado do Nominatim corresponda ao GeocodeResultSerializer
-            # ou mapear os campos conforme necessário.
             result_data = data[0]
 
-            # Cache o resultado bruto ou o resultado serializado, dependendo da sua necessidade
             cache.set(cache_key, result_data, timeout=86400)
 
             output_serializer = GeocodeResultSerializer(result_data)
