@@ -11,7 +11,7 @@ class CollectionTypeSerializer(serializers.ModelSerializer):
 class CollectionPointSerializer(serializers.ModelSerializer):
     latitude = serializers.DecimalField(validators=[validate_latitude_value], max_digits=9, decimal_places=6)
     longitude = serializers.DecimalField(validators=[validate_longitude_value], max_digits=9, decimal_places=6)
-    types = serializers.SerializerMethodField()
+    types = serializers.PrimaryKeyRelatedField(many=True, queryset=CollectionType.objects.all())
 
     class Meta:
         model = CollectionPoint
