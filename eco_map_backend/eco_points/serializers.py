@@ -4,6 +4,7 @@ from rest_framework import serializers
 from .models import User
 
 class OperatingHourSerializer(serializers.ModelSerializer):
+    collection_point = serializers.PrimaryKeyRelatedField(read_only=True)
     class Meta:
         model = OperatingHour
         fields = ['id', 'collection_point', 'day_of_week', 'opening_time', 'closing_time', 'active']
@@ -40,6 +41,24 @@ class CollectionPointSerializer(serializers.ModelSerializer):
 
     def get_types(self, obj):
         return [t.id for t in obj.types.all()]
+    
+    def create(self, validated_data):
+        operating_hours_data = validated_data.pop('operating_hours', [])
+        types_data = validated_data.pop('types', [])
+        
+        collection_point = CollectionPoint.objects.create(**validated_data)
+        
+        collection_point.types.set(types_data)
+        
+        for op_hour in operating_hours_data:
+            OperatingHour.objects.create(
+                collection_point=collection_point,
+                day_of_week=op_hour['day_of_week'],
+                opening_time=op_hour['opening_time'],
+                closing_time=op_hour['closing_time']
+            )
+
+        return collection_point
 
 class PointRequestSerializer(serializers.ModelSerializer):
     approved = serializers.BooleanField(read_only=True)

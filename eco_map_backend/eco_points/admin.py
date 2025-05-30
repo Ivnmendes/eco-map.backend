@@ -2,6 +2,8 @@ from django.contrib import admin
 from .models import CollectionType, CollectionPoint, PointReview, PointRequest
 
 # Register CollectionType
+
+
 class CollectionTypeAdmin(admin.ModelAdmin):
     list_display = ('name', 'description')
     search_fields = ('name',)
