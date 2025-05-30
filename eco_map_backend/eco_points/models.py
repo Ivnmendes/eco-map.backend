@@ -47,3 +47,4 @@ class OperatingHour(models.Model):
     day_of_week = models.SmallIntegerField()
     opening_time = models.TimeField()
     closing_time = models.TimeField()
+    active = models.BooleanField(default=True)
