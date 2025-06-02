@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import CollectionType, CollectionPoint, PointReview, PointRequest
+from .models import OperatingHour, CollectionType, CollectionPoint, PointReview, PointRequest
 
 # Register CollectionType
 
@@ -36,3 +36,10 @@ class PointRequestAdmin(admin.ModelAdmin):
     approved_status.short_description = 'Aprovado'
 
 admin.site.register(PointRequest, PointRequestAdmin)
+
+# Register OperatingHour
+class OperatingHourAdmin(admin.ModelAdmin):
+    list_display = ('collection_point', 'day_of_week', 'opening_time', 'closing_time', 'active')
+    search_fields = ('collection_point__name',)
+    list_filter = ('day_of_week', 'active')
+admin.site.register(OperatingHour, OperatingHourAdmin)

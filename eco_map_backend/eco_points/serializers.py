@@ -4,10 +4,9 @@ from rest_framework import serializers
 from .models import User
 
 class OperatingHourSerializer(serializers.ModelSerializer):
-    collection_point = serializers.PrimaryKeyRelatedField(read_only=True)
     class Meta:
         model = OperatingHour
-        fields = ['id', 'collection_point', 'day_of_week', 'opening_time', 'closing_time', 'active']
+        fields = ['day_of_week', 'opening_time', 'closing_time', 'active']
 
     def validate_day_of_week(self, value):
         if not (1 <= value <= 7):
@@ -38,9 +37,6 @@ class CollectionPointSerializer(serializers.ModelSerializer):
     class Meta:
         model = CollectionPoint
         fields = ['id', 'name', 'description', 'latitude', 'longitude', 'types', 'is_active', 'created_at', 'operating_hours']
-
-    def get_types(self, obj):
-        return [t.id for t in obj.types.all()]
     
     def create(self, validated_data):
         operating_hours_data = validated_data.pop('operating_hours', [])

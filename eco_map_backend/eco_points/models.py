@@ -43,7 +43,7 @@ class PointRequest(models.Model):
         return f"{self.name} ({'Aprovado' if self.approved else 'Pendente'})"
     
 class OperatingHour(models.Model):
-    collection_point = models.ForeignKey(CollectionPoint, on_delete=models.CASCADE)
+    collection_point = models.ForeignKey(CollectionPoint, on_delete=models.CASCADE, related_name='operating_hours')
     day_of_week = models.SmallIntegerField()
     opening_time = models.TimeField()
     closing_time = models.TimeField()
