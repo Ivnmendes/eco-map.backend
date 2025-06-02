@@ -8,7 +8,7 @@ from .models import CollectionType, CollectionPoint, PointRequest, PointReview, 
 from .serializers import CollectionPointSerializer, CollectionTypeSerializer, PointRequestSerializer, PointReviewSerializer, OperatingHourSerializer
 
 def get_all_object_collection_type():
-    return CollectionType.objects.all().prefetch_related('operating_hours')
+    return CollectionType.objects.all()
 
 def get_all_object_collection_point():
     return CollectionPoint.objects.all().prefetch_related('operating_hours')
