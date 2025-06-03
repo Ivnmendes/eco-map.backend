@@ -51,10 +51,10 @@ class CollectionPointSerializer(serializers.ModelSerializer):
     longitude = serializers.DecimalField(validators=[validate_longitude_value], max_digits=9, decimal_places=6)
     types = serializers.PrimaryKeyRelatedField(many=True, queryset=CollectionType.objects.all())
     operating_hours = OperatingHourSerializer(many=True, required=True)
-    image = PointImageSerializer(many=True, read_only=True)
+    images = PointImageSerializer(many=True, read_only=True)
     class Meta:
         model = CollectionPoint
-        fields = ['id', 'name', 'description', 'latitude', 'longitude', 'types', 'is_active', 'created_at', 'operating_hours', 'image']
+        fields = ['id', 'name', 'description', 'latitude', 'longitude', 'types', 'is_active', 'created_at', 'operating_hours', 'images']
     
     def create(self, validated_data):
         operating_hours_data = validated_data.pop('operating_hours', [])

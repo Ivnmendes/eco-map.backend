@@ -8,7 +8,8 @@ urlpatterns = [
 
 urlpatterns += [
     path('collection-type/', CollectionTypeList.as_view(), name='collection-type-list'),
-    path('collection-type/<int:pk>/', CollectionTypeDetail.as_view(), name='collection-type-detail')
+    path('collection-type/<int:pk>/', CollectionTypeDetail.as_view(), name='collection-type-detail'),
+    path('collection-point/<int:pk>/upload_image/', PointImageUploadView.as_view(), name='point-image-upload'),
 ]
 
 urlpatterns += [
@@ -20,8 +21,4 @@ urlpatterns += [
     path('point-review/', PointReviewList.as_view(), name='point-review-list'),
     path('point-review/<int:pk>/', PointReviewDetail.as_view(), name='point-review-detail'),
     path('point-review/filter/', PointReviewFilteredList.as_view(), name='point-review-filtered-list'),
-]
-
-urlpatterns += [
-    path('point-image/upload/', PointImageUploadView.as_view(), name='point-image-upload'),
 ]

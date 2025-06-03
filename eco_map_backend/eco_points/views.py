@@ -188,6 +188,6 @@ class PointImageUploadView(APIView):
             image=image_file
         )
 
-        response_serializer = PointImageUploadSerializer(new_image)
+        response_serializer = PointImageSerializer(new_image)
 
         return Response(response_serializer.data, status=status.HTTP_201_CREATED)
