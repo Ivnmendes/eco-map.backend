@@ -20,6 +20,13 @@ class CollectionPoint(models.Model):
     def __str__(self):
         return self.name
 
+class PointImage(models.Model):
+    collection_point = models.ForeignKey(CollectionPoint, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='point_images/')
+
+    def __str__(self):
+        return f"Image for {self.collection_point.name}"
+
 class PointReview(models.Model):
     point = models.ForeignKey(CollectionPoint, on_delete=models.CASCADE, related_name='reviews')
     user = models.ForeignKey(User, on_delete=models.CASCADE)

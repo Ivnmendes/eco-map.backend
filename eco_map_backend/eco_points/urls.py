@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import CollectionPointDetail, CollectionPointList, CollectionTypeDetail, CollectionTypeList, PointRequestDetail, PointRequestList, PointReviewDetail, PointReviewList, PointReviewFilteredList
+from .views import CollectionPointDetail, CollectionPointList, CollectionTypeDetail, CollectionTypeList, PointRequestDetail, PointRequestList, PointReviewDetail, PointReviewList, PointReviewFilteredList, PointImageUploadView
 
 urlpatterns = [
     path('collection-point/', CollectionPointList.as_view(), name='collection-point-list'),
@@ -20,4 +20,8 @@ urlpatterns += [
     path('point-review/', PointReviewList.as_view(), name='point-review-list'),
     path('point-review/<int:pk>/', PointReviewDetail.as_view(), name='point-review-detail'),
     path('point-review/filter/', PointReviewFilteredList.as_view(), name='point-review-filtered-list'),
+]
+
+urlpatterns += [
+    path('point-image/upload/', PointImageUploadView.as_view(), name='point-image-upload'),
 ]

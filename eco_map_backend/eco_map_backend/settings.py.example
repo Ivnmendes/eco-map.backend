@@ -173,7 +173,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'eco_ponto_db',
         'USER': 'eco_user',
-        'PASSWORD': '',
+        'PASSWORD': 'senha',
         'HOST': 'localhost',
         'PORT': '5432',
     }
@@ -221,3 +221,6 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+MEDIA_URL = 'media/'
+MEDIA_ROOT = BASE_DIR / 'media'

@@ -1,4 +1,4 @@
-from .models import CollectionPoint, CollectionType, PointRequest, PointReview, OperatingHour
+from .models import CollectionPoint, CollectionType, PointRequest, PointReview, OperatingHour, PointImage
 from .validators import validate_latitude_value, validate_longitude_value, validate_category_value
 from rest_framework import serializers
 from .models import User
@@ -24,6 +24,23 @@ class OperatingHourSerializer(serializers.ModelSerializer):
 
         return data
 
+class PointImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PointImage
+        fields = ['id', 'collection_point', 'image']
+    
+    def validate_image(self, value):
+        if not value.name.lower().endswith(('.png', '.jpg', '.jpeg')):
+            raise serializers.ValidationError("A imagem deve ser um arquivo PNG ou JPEG.")
+        return value
+    
+class PointImageUploadSerializer(serializers.ModelSerializer):
+    image = serializers.ImageField(required=True)
+
+    class Meta:
+        model = PointImage
+        fields = ['image']
+
 class CollectionTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = CollectionType
@@ -33,10 +50,11 @@ class CollectionPointSerializer(serializers.ModelSerializer):
     latitude = serializers.DecimalField(validators=[validate_latitude_value], max_digits=9, decimal_places=6)
     longitude = serializers.DecimalField(validators=[validate_longitude_value], max_digits=9, decimal_places=6)
     types = serializers.PrimaryKeyRelatedField(many=True, queryset=CollectionType.objects.all())
-    operating_hours = OperatingHourSerializer(many=True, required=False)
+    operating_hours = OperatingHourSerializer(many=True, required=True)
+    image = PointImageSerializer(many=True, read_only=True)
     class Meta:
         model = CollectionPoint
-        fields = ['id', 'name', 'description', 'latitude', 'longitude', 'types', 'is_active', 'created_at', 'operating_hours']
+        fields = ['id', 'name', 'description', 'latitude', 'longitude', 'types', 'is_active', 'created_at', 'operating_hours', 'image']
     
     def create(self, validated_data):
         operating_hours_data = validated_data.pop('operating_hours', [])

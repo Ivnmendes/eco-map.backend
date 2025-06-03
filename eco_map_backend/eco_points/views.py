@@ -3,9 +3,11 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import generics, status
 from drf_spectacular.utils import extend_schema, OpenApiExample, OpenApiParameter
+from django.shortcuts import get_object_or_404
+from rest_framework.parsers import MultiPartParser
 
-from .models import CollectionType, CollectionPoint, PointRequest, PointReview, PointRequest, OperatingHour
-from .serializers import CollectionPointSerializer, CollectionTypeSerializer, PointRequestSerializer, PointReviewSerializer, OperatingHourSerializer
+from .models import CollectionType, CollectionPoint, PointRequest, PointReview, PointRequest, OperatingHour, PointImage
+from .serializers import CollectionPointSerializer, CollectionTypeSerializer, PointRequestSerializer, PointReviewSerializer, OperatingHourSerializer, PointImageUploadSerializer, PointImageSerializer
 
 def get_all_object_collection_type():
     return CollectionType.objects.all()
@@ -162,3 +164,30 @@ class PointRequestDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = PointRequestSerializer
     permission_classes = [IsAuthenticated]
     lookup_field = 'pk'
+
+@extend_schema(
+    tags=["Imagem do ponto"],
+    request=PointImageUploadSerializer
+)
+class PointImageUploadView(APIView):
+    """
+    Responsável por lidar com upload de imagens para pontos de coleta.
+    """
+    parser_classes = (MultiPartParser,) # Necessário para lidar com uploads de arquivos
+
+    def post(self, request, pk=None):
+        collection_point = get_object_or_404(CollectionPoint, pk=pk)
+
+        upload_serializer = PointImageUploadSerializer(data=request.data)
+        upload_serializer.is_valid(raise_exception=True)
+
+        image_file = upload_serializer.validated_data['image']
+
+        new_image = PointImage.objects.create(
+            collection_point=collection_point,
+            image=image_file
+        )
+
+        response_serializer = PointImageUploadSerializer(new_image)
+
+        return Response(response_serializer.data, status=status.HTTP_201_CREATED)
