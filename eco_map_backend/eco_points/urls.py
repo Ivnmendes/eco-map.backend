@@ -1,20 +1,18 @@
 from django.urls import path
-from .views import CollectionPointDetail, CollectionPointList, CollectionTypeDetail, CollectionTypeList, PointRequestDetail, PointRequestList, PointReviewDetail, PointReviewList, PointReviewFilteredList, PointImageUploadView
+from .views import CollectionPointDetail, CollectionPointList, CollectionTypeDetail, CollectionTypeList, PointReviewDetail, PointReviewList, PointReviewFilteredList, PointImageUploadView, UserPendingCollectionPointsList, ActiveCollectionPointsList, InactiveCollectionPointsList
 
 urlpatterns = [
     path('collection-point/', CollectionPointList.as_view(), name='collection-point-list'),
-    path('collection-point/<int:pk>/', CollectionPointDetail.as_view(), name='collection-point-detail')
+    path('collection-point/<int:pk>/', CollectionPointDetail.as_view(), name='collection-point-detail'),
+    path('collection-points/my-pending/', UserPendingCollectionPointsList.as_view(), name='user-pending-collection-points'),
+    path('collection-points/active/', ActiveCollectionPointsList.as_view(), name='active-collection-points'),
+    path('collection-points/inactive/', InactiveCollectionPointsList.as_view(), name='inactive-collection-points'),
 ]
 
 urlpatterns += [
     path('collection-type/', CollectionTypeList.as_view(), name='collection-type-list'),
     path('collection-type/<int:pk>/', CollectionTypeDetail.as_view(), name='collection-type-detail'),
     path('collection-point/<int:pk>/upload_image/', PointImageUploadView.as_view(), name='point-image-upload'),
-]
-
-urlpatterns += [
-    path('point-request/', PointRequestList.as_view(), name='point-request-list'),
-    path('point-request/<int:pk>/', PointRequestDetail.as_view(), name='point-request-detail')
 ]
 
 urlpatterns += [

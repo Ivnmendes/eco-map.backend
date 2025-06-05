@@ -35,19 +35,6 @@ class PointReview(models.Model):
 
     def __str__(self):
         return f"{self.user} - {self.point}"
-
-class PointRequest(models.Model):
-    name = models.CharField(max_length=100)
-    description = models.TextField(blank=True, max_length=500)
-    latitude = models.DecimalField(max_digits=9, decimal_places=6)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6)
-    types = models.ManyToManyField(CollectionType)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    approved = models.BooleanField(null=False, blank=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.name} ({'Aprovado' if self.approved else 'Pendente'})"
     
 class OperatingHour(models.Model):
     collection_point = models.ForeignKey(CollectionPoint, on_delete=models.CASCADE, related_name='operating_hours')

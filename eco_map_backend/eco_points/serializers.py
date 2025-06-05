@@ -1,7 +1,6 @@
-from .models import CollectionPoint, CollectionType, PointRequest, PointReview, OperatingHour, PointImage
+from .models import CollectionPoint, CollectionType, PointReview, OperatingHour, PointImage
 from .validators import validate_latitude_value, validate_longitude_value, validate_category_value
 from rest_framework import serializers
-from .models import User
 
 class OperatingHourSerializer(serializers.ModelSerializer):
     class Meta:
@@ -52,49 +51,32 @@ class CollectionPointSerializer(serializers.ModelSerializer):
     types = serializers.PrimaryKeyRelatedField(many=True, queryset=CollectionType.objects.all())
     operating_hours = OperatingHourSerializer(many=True, required=True)
     images = PointImageSerializer(many=True, read_only=True)
+    is_active = serializers.BooleanField(read_only=True) 
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
+    user_name = serializers.CharField(source='user.first_name', read_only=True)
+
     class Meta:
         model = CollectionPoint
-        fields = ['id', 'name', 'description', 'latitude', 'longitude', 'types', 'is_active', 'created_at', 'operating_hours', 'images']
+        fields = ['id', 'name', 'description', 'latitude', 'longitude', 'types', 'is_active', 'created_at', 'operating_hours', 'images', 'user', 'user_name']
     
     def create(self, validated_data):
         operating_hours_data = validated_data.pop('operating_hours', [])
         types_data = validated_data.pop('types', [])
         
+        validated_data['is_active'] = False
+
+        request = self.context.get("request")
+        if request and hasattr(request, "user") and request.user.is_authenticated:
+            validated_data['user'] = request.user
+        
         collection_point = CollectionPoint.objects.create(**validated_data)
         
         collection_point.types.set(types_data)
         
-        for op_hour in operating_hours_data:
-            OperatingHour.objects.create(
-                collection_point=collection_point,
-                day_of_week=op_hour['day_of_week'],
-                opening_time=op_hour['opening_time'],
-                closing_time=op_hour['closing_time']
-            )
+        for op_hour_data in operating_hours_data:
+            OperatingHour.objects.create(collection_point=collection_point, **op_hour_data)
 
         return collection_point
-
-class PointRequestSerializer(serializers.ModelSerializer):
-    approved = serializers.BooleanField(read_only=True)
-    latitude = serializers.DecimalField(validators=[validate_latitude_value], max_digits=9, decimal_places=6)
-    longitude = serializers.DecimalField(validators=[validate_longitude_value], max_digits=9, decimal_places=6)
-    types = serializers.PrimaryKeyRelatedField(many=True, queryset=CollectionType.objects.all())
-    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
-    user_name = serializers.CharField(read_only=True, source='user.first_name')
-    # operating_hours = OperatingHourSerializer(many=True, required=False)
-
-    class Meta:
-        model = PointRequest
-        fields = ['id', 'name', 'description', 'latitude', 'longitude', 'types', 'user', 'user_name', 'approved', 'created_at',
-                   #operating_hours
-                   ]
-
-    def get_types(self, obj):
-        return {str(t.id): t.name for t in obj.types.all()}
-    
-    def create(self, validated_data):
-        validated_data['approved'] = False
-        return super().create(validated_data)
 
 class PointReviewSerializer(serializers.ModelSerializer):
     user_name = serializers.CharField(source='user.first_name')
