@@ -2,8 +2,8 @@ from django.urls import path
 from .views import CollectionPointDetail, CollectionPointList, CollectionTypeDetail, CollectionTypeList, PointReviewDetail, PointReviewList, PointReviewFilteredList, PointImageUploadView, UserPendingCollectionPointsList, ActiveCollectionPointsList, InactiveCollectionPointsList
 
 urlpatterns = [
-    path('collection-point/', CollectionPointList.as_view(), name='collection-point-list'),
-    path('collection-point/<int:pk>/', CollectionPointDetail.as_view(), name='collection-point-detail'),
+    path('collection-points/', CollectionPointList.as_view(), name='collection-points-list'),
+    path('collection-points/<int:pk>/', CollectionPointDetail.as_view(), name='collection-points-detail'),
     path('collection-points/my-pending/', UserPendingCollectionPointsList.as_view(), name='user-pending-collection-points'),
     path('collection-points/active/', ActiveCollectionPointsList.as_view(), name='active-collection-points'),
     path('collection-points/inactive/', InactiveCollectionPointsList.as_view(), name='inactive-collection-points'),
