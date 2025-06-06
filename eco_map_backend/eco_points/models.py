@@ -17,6 +17,11 @@ class CollectionPoint(models.Model):
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='collection_points', null=True, blank=True)
+    status = models.CharField(max_length=20, default='pending', choices=[
+        ('pending', 'Pending'),
+        ('rejected', 'Rejected'),
+        ('approved', 'Approved'),
+    ])
 
     def __str__(self):
         return self.name

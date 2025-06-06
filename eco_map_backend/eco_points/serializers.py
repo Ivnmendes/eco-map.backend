@@ -57,13 +57,14 @@ class CollectionPointSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CollectionPoint
-        fields = ['id', 'name', 'description', 'latitude', 'longitude', 'types', 'is_active', 'created_at', 'operating_hours', 'images', 'user', 'user_name']
+        fields = ['id', 'name', 'description', 'latitude', 'longitude', 'types', 'is_active', 'created_at', 'operating_hours', 'images', 'user', 'user_name', 'status']
     
     def create(self, validated_data):
         operating_hours_data = validated_data.pop('operating_hours', [])
         types_data = validated_data.pop('types', [])
         
         validated_data['is_active'] = False
+        validated_data['status'] = 'pending'
 
         request = self.context.get("request")
         if request and hasattr(request, "user") and request.user.is_authenticated:

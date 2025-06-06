@@ -175,3 +175,5 @@ cython_debug/
 
 # settings.py
 eco_map_backend/eco_map_backend/settings.py
+
+eco_map_backend/media/
