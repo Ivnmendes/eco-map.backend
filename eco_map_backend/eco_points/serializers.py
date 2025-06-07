@@ -86,3 +86,23 @@ class PointReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = PointReview
         fields = ['id', 'point', 'point_name', 'user', 'user_name', 'comment', 'created_at']
+
+class PointStatusUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CollectionPoint
+        fields = ['is_active', 'status']
+
+    def validate(self, data):
+        status = data.get('status')
+        is_active = data.get('is_active')
+
+        if status == 'approved' and not is_active:
+            raise serializers.ValidationError("Pontos aprovados devem ter 'is_active' como verdadeiro.")
+        
+        if status == 'rejected' and is_active:
+            raise serializers.ValidationError("Pontos rejeitados devem ter 'is_active' como falso.")
+        
+        if status == 'pending' and is_active:
+            raise serializers.ValidationError("Pontos pendentes não podem estar ativos.")
+
+        return data

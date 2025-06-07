@@ -118,14 +118,14 @@ JET_THEMES = [
         'title': 'Default' 
     },
     {
-        'theme': 'green',
+        'theme': '#256D5B',
         'color': '#44b78b',
-        'title': 'Green'
+        'title': '#256D5B'
     },
     {
-        'theme': 'light-green',
+        'theme': 'light-#256D5B',
         'color': '#2faa60',
-        'title': 'Light Green'
+        'title': 'Light #256D5B'
     },
     {
         'theme': 'light-violet',
@@ -143,7 +143,7 @@ JET_THEMES = [
         'title': 'Light Gray'
     }
 ]
-JET_DEFAULT_THEME = 'light-green'
+JET_DEFAULT_THEME = 'light-#256D5B'
 
 ROOT_URLCONF = 'eco_map_backend.urls'
 

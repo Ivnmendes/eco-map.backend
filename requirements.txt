@@ -7,3 +7,4 @@ drf_spectacular
 django-jet-reboot
 django-cors-headers
 requests
+pillow

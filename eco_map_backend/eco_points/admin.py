@@ -12,7 +12,7 @@ admin.site.register(CollectionType, CollectionTypeAdmin)
 
 # Register CollectionPoint
 class CollectionPointAdmin(admin.ModelAdmin):
-    list_display = ('name', 'latitude', 'longitude', 'is_active', 'created_at')
+    list_display = ('name', 'latitude', 'longitude', 'is_active', 'created_at', 'status')
     search_fields = ('name',)
     list_filter = ('is_active',)
 

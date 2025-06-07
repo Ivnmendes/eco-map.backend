@@ -1,10 +1,11 @@
 from django.urls import path
-from .views import CollectionPointDetail, CollectionPointList, CollectionTypeDetail, CollectionTypeList, PointReviewDetail, PointReviewList, PointReviewFilteredList, PointImageUploadView, UserPendingCollectionPointsList, ActiveCollectionPointsList, InactiveCollectionPointsList
+from .views import CollectionPointDetail, CollectionPointList, CollectionTypeDetail, CollectionTypeList, PointReviewDetail, PointReviewList, PointReviewFilteredList, PointImageUploadView, UserSubmitedCollectionPointsList, ActiveCollectionPointsList, InactiveCollectionPointsList, UpdatePointStatusView
 
 urlpatterns = [
     path('collection-points/', CollectionPointList.as_view(), name='collection-points-list'),
     path('collection-points/<int:pk>/', CollectionPointDetail.as_view(), name='collection-points-detail'),
-    path('collection-points/my-pending/', UserPendingCollectionPointsList.as_view(), name='user-pending-collection-points'),
+    path('collection-points/<int:pk>/update-status/', UpdatePointStatusView.as_view(), name='collection-point-update-status'),
+    path('collection-points/my-submits/', UserSubmitedCollectionPointsList.as_view(), name='user-submited-collection-points'),
     path('collection-points/active/', ActiveCollectionPointsList.as_view(), name='active-collection-points'),
     path('collection-points/inactive/', InactiveCollectionPointsList.as_view(), name='inactive-collection-points'),
 ]

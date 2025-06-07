@@ -1,13 +1,13 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework import generics, status
 from drf_spectacular.utils import extend_schema, OpenApiExample, OpenApiParameter
 from django.shortcuts import get_object_or_404
 from rest_framework.parsers import MultiPartParser
 
 from .models import CollectionType, CollectionPoint, PointReview, OperatingHour, PointImage
-from .serializers import CollectionPointSerializer, CollectionTypeSerializer, PointReviewSerializer, OperatingHourSerializer, PointImageUploadSerializer, PointImageSerializer
+from .serializers import CollectionPointSerializer, CollectionTypeSerializer, PointReviewSerializer, OperatingHourSerializer, PointImageUploadSerializer, PointImageSerializer, PointStatusUpdateSerializer
 
 def get_all_object_collection_type():
     return CollectionType.objects.all()
@@ -173,20 +173,19 @@ class PointImageUploadView(APIView):
         return Response(response_serializer.data, status=status.HTTP_201_CREATED)
     
 @extend_schema(tags=["Ponto de coleta"])
-class UserPendingCollectionPointsList(generics.ListAPIView):
+class UserSubmitedCollectionPointsList(generics.ListAPIView):
     """
-    Lista todos os pontos de coleta pendentes (is_active=False) criados pelo usuário logado.
+    Lista todos os pontos de coleta submetidos pelo usuário logado.
     """
     serializer_class = CollectionPointSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         """
-        Retorna uma lista de pontos de coleta pendentes (is_active=False)
-        apenas para o usuário autenticado.
+        Retorna uma lista de pontos de coleta submetidos pelo usuário autenticado.
         """
         user = self.request.user
-        return CollectionPoint.objects.filter(user=user, is_active=False).prefetch_related('operating_hours', 'images').select_related('user')
+        return CollectionPoint.objects.filter(user=user).prefetch_related('operating_hours', 'images').select_related('user')
 
     def get_serializer_context(self):
         """
@@ -227,10 +226,25 @@ class InactiveCollectionPointsList(generics.ListAPIView):
         """
         Retorna uma lista de todos os pontos de coleta inativos.
         """
-        return CollectionPoint.objects.filter(is_active=False).prefetch_related('operating_hours', 'images').select_related('user')
+        return CollectionPoint.objects.filter(is_active=False, status='pending').prefetch_related('operating_hours', 'images').select_related('user')
 
     def get_serializer_context(self):
         """
         Passa o contexto da requisição para o serializer.
         """
         return {'request': self.request}
+
+@extend_schema(
+    tags=["Ponto de coleta (Admin)"],
+    request=PointStatusUpdateSerializer,
+    responses={200: CollectionPointSerializer}
+)
+class UpdatePointStatusView(generics.UpdateAPIView):
+    """
+    Endpoint para administradores aprovarem ou rejeitarem um ponto de coleta.
+    Atualiza os campos 'is_active' e 'status'.
+    """
+    queryset = get_all_object_collection_point()
+    serializer_class = PointStatusUpdateSerializer
+    permission_classes = [IsAdminUser]
+    lookup_field = 'pk'
